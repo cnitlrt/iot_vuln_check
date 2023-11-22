@@ -188,7 +188,7 @@ def get_function_addr(symbol):
         syms = bv.symbols[symbol]
     for i in syms:
         if "mips32" == bv.arch.name or "mipsel32" == bv.arch.name:
-            if i.type == SymbolType.ImportAddressSymbol:
+            if i.type == check_type:
                 return i.address
         else:
             if i.type == SymbolType.ImportedFunctionSymbol:
@@ -198,15 +198,33 @@ def get_function_addr(symbol):
 def is_constant(a):
     return a.type == RegisterValueType.ConstantPointerValue or a.type == RegisterValueType.ConstantValue
 
+def get_checktype():
+    tmp_symbols = bv.symbols["system"]
+    m = 0
+    for tmp_symbol in tmp_symbols:
+        # print(tmp_symbol)
+        xrefs = bv.get_code_refs(tmp_symbol.address)
+        for _ in xrefs:
+            m += 1
+        if m > 3:
+            check_type = tmp_symbol.type
+            break
+    return check_type
+
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("-f","--file", help="File to analyze")
     parser.add_argument("-p","--path", help="Path to analyze")
     args = parser.parse_args()
+    check_type = ""
     if args.file:
         bv = open_view(args.file)
         if bv == None:
             pass
+        if check_type == "":
+            check_type = get_checktype()
+            # print(check_type)           
         ret = []
         check_overflow()
         check_cmd()
