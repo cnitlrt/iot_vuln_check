@@ -199,6 +199,7 @@ def is_constant(a):
     return a.type == RegisterValueType.ConstantPointerValue or a.type == RegisterValueType.ConstantValue
 
 def get_checktype():
+    check_type_tmp = ""
     tmp_symbols = bv.symbols["system"]
     m = 0
     for tmp_symbol in tmp_symbols:
@@ -207,9 +208,9 @@ def get_checktype():
         for _ in xrefs:
             m += 1
         if m > 3:
-            check_type = tmp_symbol.type
+            check_type_tmp = tmp_symbol.type
             break
-    return check_type
+    return check_type_tmp
 
 
 if __name__ == "__main__":
@@ -223,8 +224,7 @@ if __name__ == "__main__":
         if bv == None:
             pass
         if check_type == "":
-            check_type = get_checktype()
-            # print(check_type)           
+            check_type = get_checktype()         
         ret = []
         check_overflow()
         check_cmd()
@@ -237,6 +237,8 @@ if __name__ == "__main__":
             bv = open_view(args.path + file)
             if bv == None:
                 continue
+            if check_type == "":
+                check_type = get_checktype()
             ret = []
             check_overflow()
             check_cmd()
