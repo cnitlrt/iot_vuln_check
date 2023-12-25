@@ -9,6 +9,7 @@ class Success(Enum):
     COMMANDINJECT = auto()
     COMMANDUNCONSTANT = auto()
     BUFOVERFLOW = auto()
+    
 def get_call_symbol_addr_from_func(symbol,func:Function):
     x = []
     for block in func.low_level_il:
