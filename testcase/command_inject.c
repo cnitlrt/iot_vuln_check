@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 void excutor(char *cmd){
     char buffer[0x100];
@@ -10,6 +11,7 @@ void excutor(char *cmd){
 int main(){
     char ip[100];
     read(0,ip,100);
-    excutor(ip);
+    if (!strcmp(ip,"echo\n"))
+        excutor(ip);
     return 0;
 }

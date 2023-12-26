@@ -9,7 +9,6 @@ class Success(Enum):
     COMMANDINJECT = auto()
     COMMANDUNCONSTANT = auto()
     BUFOVERFLOW = auto()
-    
 def get_call_symbol_addr_from_func(symbol,func:Function):
     x = []
     for block in func.low_level_il:
@@ -35,7 +34,7 @@ def check_commend(symbol):
         cmd = func.get_parameter_at(ref.address,None,0)
         if is_constant(cmd):
             continue    
-        call_sprintf_addrs = get_call_symbol_addr_from_func("sprintf",func)
+        call_sprintf_addrs = get_call_symbol_addr_from_func("snprintf",func)
         for call_sprintf_addr in call_sprintf_addrs:
             fmt = func.get_parameter_at(call_sprintf_addr,None,1)
             asc = bv.get_ascii_string_at(fmt.value,min_length = 2)

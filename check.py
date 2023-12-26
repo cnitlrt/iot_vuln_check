@@ -21,7 +21,7 @@ def check_commend(symbol):
         if is_constant(cmd):
             continue
         callees = func.callees        
-        if 'sprintf' in [callee.symbol.name for callee in callees]:        
+        if 'snprintf' in [callee.symbol.name for callee in callees]:        
             ret.append((symbol,func.name,ref.address,Success.COMMANDINJECT))
 
 def check_doSystem(symbol):
@@ -221,6 +221,11 @@ if __name__ == "__main__":
     check_type = ""
     if args.file:
         bv = open_view(args.file)
+
+        bv.update_analysis()
+        for func in bv.functions:
+            print(func.symbol.name)
+
         if bv == None:
             pass
         if check_type == "":
