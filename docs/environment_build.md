@@ -14,6 +14,16 @@ BinaryNinja的安装包
 python3 install_api.py
 ```
 
+建议虚拟环境
+
+```
+python3 install_api.py -v
+```
+
+
+
+
+
 官方API文档：https://api.binary.ninja/
 
 示例：打开一个二进制文件并显示所有函数
