@@ -35,3 +35,8 @@ if __name__ == "__main__":
 https://docs.binary.ninja/getting-started.html#linux
 
 https://www.ddosi.org/binary-ninja/#Binary_Ninja%E7%A0%B4%E8%A7%A3%E7%89%88%E4%B8%8B%E8%BD%BD%E5%9C%B0%E5%9D%80winlinuxLicense
+
+
+
+
+test123
