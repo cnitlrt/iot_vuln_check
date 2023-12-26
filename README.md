@@ -20,4 +20,3 @@ python3 check_vuln.py -p www/cgi-bin/
 - [x] doSystem commend injection
 ## Reference link
 https://dawnslab.jd.com/binaryninja1-zh-cn/
-
