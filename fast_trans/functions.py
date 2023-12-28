@@ -1,3 +1,4 @@
+from binaryninja import BinaryView
 from fast_trans.base import *
 #snprintf函数检查
 class Snprintf(Checker):
@@ -10,15 +11,18 @@ class Snprintf(Checker):
     Snprintf return addr:[dest] ("%s" must in pattern)
     '''
     def get_dict(self):
-        for ref in self.ref:
+        for ref in self.bv.get_code_refs(self.address):
+            pattern = ""
             func = ref.function
-            temp_arg = []
-            temp_arg.append(func.get_parameter_at(ref.address,None,0))
-            pattern = self.bv.get_ascii_string_at(func.get_parameter_at(ref.address,None,2).value, min_length = 2).value
+            temp_arg = func.get_parameter_at(ref.address,None,0)
+            tmp=func.get_parameter_at(ref.address,None,2)
+            if tmp:
+                pattern = self.bv.get_ascii_string_at(tmp.value, min_length = 2).value
             if ("%s" in pattern):
-                self.all_args.update({ref.address:temp_arg})
+                self.arg_xrefs.update({ref.address:temp_arg})
             else:
                 continue
+            self.arg_xrefs.update({ref.address:temp_arg})
 
 #sprintf函数检查
 class Sprintf(Checker):
@@ -39,7 +43,7 @@ class Sprintf(Checker):
             temp_arg.append(func.get_parameter_at(ref.address,None,0))
             pattern = self.bv.get_ascii_string_at(func.get_parameter_at(ref.address,None,1).value, min_length = 2).value
             if ("%s" in pattern):
-                self.all_args.update({ref.address:temp_arg})
+                self.arg_xrefs.update({ref.address:temp_arg})
             else:
                 continue
 
@@ -49,14 +53,11 @@ class System(Checker):
         super().__init__(prog_bv, func, args)
 
     def get_dict(self):
-        if self.ref == None:
-            return
-            
-        for ref in self.ref:
+        for ref in self.bv.get_code_refs(self.address):
             func = ref.function
             temp_arg = func.get_parameter_at(ref.address,None,0)
             if not self.is_constant(temp_arg):
-                self.all_args.update({ref.address:temp_arg.value})
+                self.arg_xrefs.update({ref.address:temp_arg})
 
 # #dosystem检查 <-继承System
 # class Dosystem(System):
@@ -69,6 +70,9 @@ class Popen(System):
         super().__init__(prog_bv, func, args)
 
 #execve检查 <-继承System
-class Popen(System):
+class Dosystem(System):
     def __init__(self, prog_bv: BinaryView, func: str, args=1) -> None:
         super().__init__(prog_bv, func, args)
+
+
+     

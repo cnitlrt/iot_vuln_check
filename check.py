@@ -223,8 +223,8 @@ if __name__ == "__main__":
         bv = open_view(args.file)
 
         bv.update_analysis()
-        for func in bv.functions:
-            print(func.symbol.name)
+        # for func in bv.functions:
+        #     print(func.symbol.name)
 
         if bv == None:
             pass

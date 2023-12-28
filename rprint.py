@@ -1,3 +1,4 @@
+from fast_trans.more_types import *
 from rich import print as rprint
 from datetime import datetime
 import traceback
@@ -10,7 +11,7 @@ def error(*body):
         if "Error" not in str(type(i)): 
             msg += str(i) + " "
         else: flag = True
-    rprint("[[bold green]" + datetime.now().strftime("%Y-%m-%d %H:%M:%S") + "[/bold green]] [bold red]XeaN Server[/bold red] [[bold red]error[/bold red]] > [bold yellow]" + msg + "[/bold yellow]")
+    rprint("[[bold green]" + datetime.now().strftime("%Y-%m-%d %H:%M:%S") + "[/bold green]] [bold red]XeaN[/bold red] [[bold red]error[/bold red]] > [bold yellow]" + msg + "[/bold yellow]")
     if flag: traceback.print_exc()
 
 def success(*body):
@@ -18,14 +19,22 @@ def success(*body):
     msg = ""
     for i in body:
         msg += str(i) + " "
-    rprint("[[bold green]" + datetime.now().strftime("%Y-%m-%d %H:%M:%S") + "[/bold green]] [bold red]XeaN Server[/bold red] [[bold green]success[/bold green]] > " + msg)
+    rprint("[[bold green]" + datetime.now().strftime("%Y-%m-%d %H:%M:%S") + "[/bold green]] [bold red]XeaN[/bold red] [[bold green]success[/bold green]] > " + msg)
 
-def info(*body):
+def vulned(type,*body):
+    print("\033[0;31;40m│\033[0m",end="")
+    msg = "[bold yellow]"+str(type)+"[/bold yellow] "
+    for i in body:
+        msg += str(i) + " "
+    rprint("[[bold green]" + datetime.now().strftime("%Y-%m-%d %H:%M:%S") + "[/bold green]] [bold red]XeaN[/bold red] [[bold green]success[/bold green]] > " + msg)
+
+
+def info(*body, ):
     print("\033[0;31;40m│\033[0m",end="")
     msg = ""
     for i in body:
         msg += str(i) + " "    
-    rprint("[[bold green]" + datetime.now().strftime("%Y-%m-%d %H:%M:%S") + "[/bold green]] [bold red]XeaN Server[/bold red] [[bold blue]info[/bold blue]] > " + msg)
+    rprint("[[bold green]" + datetime.now().strftime("%Y-%m-%d %H:%M:%S") + "[/bold green]] [bold red]XeaN[/bold red] [[bold blue]info[/bold blue]] > " + msg)
 
 def banner(*body):
     print("[bold yellow] ╔──────────────────────╗ [/bold yellow]")

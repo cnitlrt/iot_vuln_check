@@ -1,6 +1,8 @@
 from binaryninja import *
 from rprint import *
-import angr
+import networkx as nx
+import matplotlib.pyplot as plt
+
 
 #函数检查基本类
 class Checker(object):
@@ -11,13 +13,28 @@ class Checker(object):
                  ) -> None:
         self.bv = prog_bv
         self.symbol = func
-        self.address = self.get_function_addr()
+        self.function = self.get_func_byname()
+        if self.function:
+            self.address = self.function.start
+        else:
+            self.address = None
 
-        self.ref = self.bv.get_code_refs(self.address)
+        # self.ref = self.bv.get_code_refs(self.address)
         self.args = args
-        self.all_args = {}
+        self.arg_xrefs = {}
         if self.address !=None:
             self.get_dict()
+        self.parent_call = []
+        self.get_parent_func()
+        # self.G = nx.DiGraph()
+        # self.G.add_node(hex(self.address))
+        # self.create_basic_block_graph(self.address)
+
+    def get_func_byname(self):
+        for func in self.bv.functions:
+            if func.symbol.name == self.symbol:
+                return func
+        return None
 
     def get_function_addr(self):
         syms = []
@@ -36,54 +53,48 @@ class Checker(object):
         return a.type == RegisterValueType.ConstantPointerValue or a.type == RegisterValueType.ConstantValue
 
     def get_dict(self):         #重载该函数实现分类  
-        for ref in self.ref:
+        if self.address == None:
+            return
+        for ref in self.bv.get_code_refs(self.address):
             func = ref.function
-            temp_arg = []
+            temp_arg = []       #get_var_uses
             for i in range(self.args):
                 temp_arg.append(func.get_parameter_at(ref.address,None,i))
-            self.all_args.update({ref.address:temp_arg})
-        
+            self.arg_xrefs.update({ref.address:temp_arg})
+
+    def get_parent_func(self):
+        for addr in self.arg_xrefs.keys():
+            self.parent_call.append(self.bv.get_functions_containing(addr)[0])
+        # for func in self.parent_call:
+        #     info(func)
+
+    def create_basic_block_graph(self, func_addr: int):
+        for refer in self.arg_xrefs.keys():
+            self.G.add_node(hex(refer))
+            self.G.add_edge(hex(func_addr), hex(refer))
+
+    def visualize_basic_block_graph(self):
+        pos = nx.spring_layout(self.G)
+        nx.draw(self.G, pos, with_labels=True, font_weight='bold', node_size=700, node_color="skyblue")
+        plt.show()
+
+
 class Searcher(object):
-     def __init__(self,
-                  binname:str,
-                  src_checker,
-                  dest_checker
-                  ) -> None:
+    def __init__(self,) -> None:
+        self.path=[]
+
+    def get_cross(self, dictA: dict, dictB: dict):
+        keys = []
+        for va in dictA:
+            for vb in dictB:
+                if dictA[va].value == dictB[vb].value:
+                    keys.append({va:dictA[va], vb:dictB[vb]})
+        return keys
+    
+    def get_result(self):
+        for path in self.path:
+            vulned(SuccessType.COMMANDINJECT, hex(list(path.keys())[0]),"--->",hex(list(path.keys())[1]),"  same var:", hex(list(path.values())[0].value))
         
-        # 创建一个 Angr 项目
-        p=angr.Project(binname,auto_load_libs=False)
-
-        state=p.factory.entry_state()
-        #state=p.factory.blank_state() #no-initalize
-        #state=p.factory.full_init__state() #full-initalize
-
-        simgr=p.factory.simgr(state)
-
-        Find = dest_checker
-        Avoid = src_checker
-
-        res=simgr.explore(find = Find)
-        if res.found[0]:
-            print (res.found[0].posix.dumps(0))
-
-        # project = angr.Project(binary_path, auto_load_libs=False)
-
-        # # 创建一个符号执行状态
-        # # state = project.factory.blank_state(addr=src_checker)
-        # state = project.factory.entry_state()
-        # # 进行动态符号执行
-        # simulation = project.factory.simgr(state)
-        # simulation.explore(find=dest_checker)
-
-        # # 获取找到的路径
-        # if simulation.found:
-        #     found_state = simulation.found[0]
-        #     print("Found Path:", found_state.posix.dumps(0))
-
-
-
 class CommandInjectChecker(object):
     def __init__(self, Checkers=[]) -> None:
         pass
-
-

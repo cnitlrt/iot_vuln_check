@@ -11,6 +11,8 @@ void excutor(char *cmd){
 int main(){
     char ip[100];
     read(0,ip,100);
+    snprintf(ip, 0x100, "ping 1.1.1.1;");
+    printf("%s",ip);
     if (!strcmp(ip,"echo\n"))
         excutor(ip);
     return 0;
