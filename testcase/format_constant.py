@@ -6,10 +6,8 @@ from fast_trans.method import *
 from rprint import *
 
 if __name__ == "__main__":
-
-    # bv = open_view("./testcase/framework/httpd")
+    
     bv = open_view("./testcase/format_unconstant")
-    # bv = open_view("./testcase/command_inject")
     bv.update_analysis()
     printf_c = Printf(bv,"printf",1)
     search = FormatUnconstant(printf_c)
